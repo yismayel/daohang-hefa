@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星河导航 - 精选资源收录</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5a4bd1;
+            --accent: #00cec9;
+            --bg-dark: rgba(15, 15, 35, 0.85);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-hover: rgba(255, 255, 255, 0.18);
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.75);
+            --border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            color: var(--text);
+            min-height: 100vh;
+            background: #0a0a1a;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ========== 壁纸轮播背景 ========== */
+        .wallpaper-slider {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        .wallpaper-slider .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            will-change: opacity;
+        }
+        .wallpaper-slider .slide.active {
+            opacity: 1;
+        }
+        .wallpaper-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(180deg, rgba(10, 10, 26, 0.75) 0%, rgba(10, 10, 26, 0.6) 40%, rgba(10, 10, 26, 0.82) 100%);
+        }
+
+        /* ========== 验证码覆盖层 ========== */
+        .captcha-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 8, 20, 0.92);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        .captcha-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .captcha-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px 36px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .captcha-box .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .captcha-box h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .captcha-box .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 22px;
+        }
+        .captcha-canvas-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .captcha-canvas-wrap canvas {
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.9);
+            transition: border-color 0.3s;
+            width: 140px;
+            height: 50px;
+        }
+        .captcha-canvas-wrap canvas:hover {
+            border-color: var(--accent);
+        }
+        .captcha-refresh-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            height: 50px;
+        }
+        .captcha-refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(30deg);
+        }
+        .captcha-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 18px;
+            letter-spacing: 4px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .captcha-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+        .captcha-input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.3);
+        }
+        .captcha-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            margin-bottom: 10px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .captcha-error.show {
+            opacity: 1;
+        }
+        .captcha-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 24px rgba(108, 92, 231, 0.4);
+        }
+        .captcha-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(108, 92, 231, 0.55);
+        }
+        .captcha-submit:active {
+            transform: translateY(0);
+        }
+
+        /* ========== 主内容 ========== */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+            padding-bottom: 40px;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s;
+        }
+        .top-nav .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff, #c8d6e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .top-nav .logo .logo-icon {
+            font-size: 28px;
+            -webkit-text-fill-color: initial;
+        }
+        .top-nav .nav-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .top-nav .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid transparent;
+        }
+        .top-nav .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 音乐按钮 */
+        .music-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+        .music-btn.playing {
+            animation: pulse 2s infinite;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 206, 201, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px 6px rgba(0, 206, 201, 0.2);
+            }
+        }
+
+        /* Hero 区域 */
+        .hero {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease;
+        }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff, #b8e6e6, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+        }
+        .hero p {
+            font-size: 16px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* 分类区域 */
+        .categories {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        .category-section {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .category-section:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        .category-header .cat-icon {
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.12);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .category-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .category-header .cat-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .link-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            transition: left 0.5s;
+        }
+        .link-card:hover::before {
+            left: 100%;
+        }
+        .link-card:hover {
+            background: var(--card-hover);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+        .link-card .favicon-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .link-card .link-info {
+            min-width: 0;
+        }
+        .link-card .link-name {
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .link-card .link-url {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 推荐网站区 */
+        .featured-section {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
+            margin-top: 4px;
+        }
+        .featured-section:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+        .featured-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-card:hover {
+            background: var(--card-hover);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+        .featured-card .featured-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .featured-card .featured-name {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .featured-card .featured-url {
+            font-size: 12px;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        .featured-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* 投稿区 */
+        .submit-section {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .submit-section:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+        .submit-section .submit-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .submit-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .submit-section .submit-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+        .submit-section .submit-email {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+        .submit-section .submit-email strong {
+            color: var(--accent);
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+        .submit-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .submit-btn {
+            padding: 13px 28px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .submit-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(108, 92, 231, 0.4);
+        }
+        .submit-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(108, 92, 231, 0.55);
+        }
+        .submit-btn.secondary {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        .submit-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: translateY(-2px);
+        }
+
+        /* 投稿模态框 */
+        .submit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+        .submit-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .submit-modal-content {
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px 28px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            animation: fadeInUp 0.4s ease;
+            position: relative;
+        }
+        .submit-modal-content .close-modal {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+        .submit-modal-content .close-modal:hover {
+            color: #fff;
+        }
+        .submit-modal-content .modal-icon {
+            font-size: 44px;
+            margin-bottom: 12px;
+        }
+        .submit-modal-content h4 {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .submit-modal-content p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+        .submit-modal-content .modal-email {
+            font-size: 15px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            background: rgba(0, 206, 201, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .modal-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-btns .submit-btn {
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* 页脚 */
+        .footer {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 24px;
+            padding: 16px 0;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .top-nav {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px 18px;
+                align-items: flex-start;
+            }
+            .top-nav .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .top-nav .nav-links a {
+                font-size: 11px;
+                padding: 6px 12px;
+            }
+            .music-btn {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+            }
+            .hero {
+                margin-top: 30px;
+                margin-bottom: 24px;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+            .category-section,
+            .featured-section,
+            .submit-section {
+                padding: 16px;
+            }
+            .link-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 8px;
+            }
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+            .captcha-box {
+                padding: 28px 20px;
+            }
+            .captcha-canvas-wrap canvas {
+                width: 120px;
+                height: 44px;
+            }
+            .submit-btns {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 480px) {
+            .link-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .top-nav .logo {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== 壁纸轮播背景 ========== -->
+    <div class="wallpaper-slider" id="wallpaperSlider">
+        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&h=1080&fit=crop&q=80');"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&q=80');"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&h=1080&fit=crop&q=80');"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&h=1080&fit=crop&q=80');"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&h=1080&fit=crop&q=80');"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&h=1080&fit=crop&q=80');"></div>
+    </div>
+    <div class="wallpaper-overlay"></div>
+
+    <!-- ========== 验证码覆盖层 ========== -->
+    <div class="captcha-overlay" id="captchaOverlay">
+        <div class="captcha-box">
+            <div class="icon">🔐</div>
+            <h2>欢迎来到星河导航</h2>
+            <p class="subtitle">请输入下方图形验证码以继续访问</p>
+            <div class="captcha-canvas-wrap">
+                <canvas id="captchaCanvas" width="140" height="50" title="点击刷新验证码"></canvas>
+                <button class="captcha-refresh-btn" id="refreshCaptchaBtn" title="刷新验证码">🔄</button>
+            </div>
+            <input type="text" class="captcha-input" id="captchaInput" placeholder="输入验证码" maxlength="6" autocomplete="off">
+            <div class="captcha-error" id="captchaError">验证码错误，请重试</div>
+            <button class="captcha-submit" id="captchaSubmit">🚀 进入网站</button>
+        </div>
+    </div>
+
+    <!-- ========== 投稿模态框 ========== -->
+    <div class="submit-modal" id="submitModal">
+        <div class="submit-modal-content">
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+            <div class="modal-icon">📮</div>
+            <h4>网站投稿</h4>
+            <p>如果您有优质的网站资源想要分享，欢迎投稿！<br>请将您的网站名称、网址和简介发送至：</p>
+            <div class="modal-email">📧 3039196784@qq.com</div>
+            <div class="modal-btns">
+                <a href="mailto:3039196784@qq.com?subject=【网站投稿】&body=网站名称：%0A网站网址：%0A网站简介：%0A" class="submit-btn primary" id="mailtoBtn">
+                    ✉️ 使用邮箱投稿
+                </a>
+                <a href="https://mail.qq.com/" target="_blank" rel="noopener noreferrer" class="submit-btn secondary">
+                    📥 没有邮箱？下载/打开QQ邮箱
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 主内容 ========== -->
+    <div class="main-content" id="mainContent">
+        <!-- 顶部导航 -->
+        <nav class="top-nav">
+            <div class="logo">
+                <span class="logo-icon">🌌</span> 星河导航
+            </div>
+            <div class="nav-links">
+                <a href="#tech">💻 科技开发</a>
+                <a href="#life">🌿 生活百科</a>
+                <a href="#study">📚 学习资源</a>
+                <a href="#entertainment">🎮 娱乐游戏</a>
+                <a href="#shopping">🛒 购物商城</a>
+                <a href="#movie">🎬 影视动漫</a>
+                <a href="#featured">⭐ 推荐网站</a>
+            </div>
+            <button class="music-btn" id="musicToggleBtn" title="音乐开关">🎵</button>
+        </nav>
+
+        <!-- Hero -->
+        <div class="hero">
+            <h1>✨ 星河导航 ✨</h1>
+            <p>精选优质资源 · 一站式导航</p>
+        </div>
+
+        <!-- 分类区 -->
+        <div class="categories">
+            <!-- 科技与开发 -->
+            <div class="category-section" id="tech">
+                <div class="category-header">
+                    <div class="cat-icon">💻</div>
+                    <div>
+                        <h2>科技与开发</h2>
+                        <div class="cat-desc">开源社区 · 编程学习 · 开发者工具</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://github.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🐙</div>
+                        <div class="link-info"><div class="link-name">GitHub</div><div class="link-url">github.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.oschina.net" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🇨🇳</div>
+                        <div class="link-info"><div class="link-name">开源中国</div><div class="link-url">oschina.net</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.runoob.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📘</div>
+                        <div class="link-info"><div class="link-name">菜鸟教程</div><div class="link-url">runoob.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://developer.mozilla.org" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📖</div>
+                        <div class="link-info"><div class="link-name">MDN Web Docs</div><div class="link-url">developer.mozilla.org</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.w3school.com.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📗</div>
+                        <div class="link-info"><div class="link-name">W3School</div><div class="link-url">w3school.com.cn</div></div>
+                    </a>
+                    <a class="link-card" href="https://stackoverflow.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">💡</div>
+                        <div class="link-info"><div class="link-name">Stack Overflow</div><div class="link-url">stackoverflow.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://juejin.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">⛏️</div>
+                        <div class="link-info"><div class="link-name">掘金</div><div class="link-url">juejin.cn</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.csdn.net" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📝</div>
+                        <div class="link-info"><div class="link-name">CSDN</div><div class="link-url">csdn.net</div></div>
+                    </a>
+                    <a class="link-card" href="https://leetcode.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🧩</div>
+                        <div class="link-info"><div class="link-name">力扣 LeetCode</div><div class="link-url">leetcode.cn</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.freecodecamp.org" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🔥</div>
+                        <div class="link-info"><div class="link-name">freeCodeCamp</div><div class="link-url">freecodecamp.org</div></div>
+                    </a>
+                    <a class="link-card" href="https://code.visualstudio.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🛠️</div>
+                        <div class="link-info"><div class="link-name">VS Code</div><div class="link-url">code.visualstudio.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.jetbrains.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🚀</div>
+                        <div class="link-info"><div class="link-name">JetBrains</div><div class="link-url">jetbrains.com</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 生活百科 -->
+            <div class="category-section" id="life">
+                <div class="category-header">
+                    <div class="cat-icon">🌿</div>
+                    <div>
+                        <h2>生活百科</h2>
+                        <div class="cat-desc">生活技巧 · 经验分享 · 实用知识</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://www.zhihu.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">💬</div>
+                        <div class="link-info"><div class="link-name">知乎</div><div class="link-url">zhihu.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://jingyan.baidu.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📚</div>
+                        <div class="link-info"><div class="link-name">百度经验</div><div class="link-url">jingyan.baidu.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.douban.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📖</div>
+                        <div class="link-info"><div class="link-name">豆瓣</div><div class="link-url">douban.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.xiaohongshu.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📕</div>
+                        <div class="link-info"><div class="link-name">小红书</div><div class="link-url">xiaohongshu.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.smzdm.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">💰</div>
+                        <div class="link-info"><div class="link-name">什么值得买</div><div class="link-url">smzdm.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.wikihow.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📋</div>
+                        <div class="link-info"><div class="link-name">wikiHow</div><div class="link-url">wikihow.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.zhongyoo.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌿</div>
+                        <div class="link-info"><div class="link-name">中医中药网</div><div class="link-url">zhongyoo.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.bohe.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🍃</div>
+                        <div class="link-info"><div class="link-name">薄荷健康</div><div class="link-url">bohe.cn</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 学习网站 -->
+            <div class="category-section" id="study">
+                <div class="category-header">
+                    <div class="cat-icon">📚</div>
+                    <div>
+                        <h2>学习资源</h2>
+                        <div class="cat-desc">在线课程 · 知识平台 · 教育工具</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://www.icourse163.org" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🎓</div>
+                        <div class="link-info"><div class="link-name">中国大学MOOC</div><div class="link-url">icourse163.org</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.xuetangx.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🏛️</div>
+                        <div class="link-info"><div class="link-name">学堂在线</div><div class="link-url">xuetangx.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://open.163.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📺</div>
+                        <div class="link-info"><div class="link-name">网易公开课</div><div class="link-url">open.163.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📺</div>
+                        <div class="link-info"><div class="link-name">哔哩哔哩</div><div class="link-url">bilibili.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.imooc.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">💻</div>
+                        <div class="link-info"><div class="link-name">慕课网</div><div class="link-url">imooc.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.khanacademy.org" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌍</div>
+                        <div class="link-info"><div class="link-name">可汗学院</div><div class="link-url">khanacademy.org</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.coursera.org" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🎯</div>
+                        <div class="link-info"><div class="link-name">Coursera</div><div class="link-url">coursera.org</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.udemy.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📈</div>
+                        <div class="link-info"><div class="link-name">Udemy</div><div class="link-url">udemy.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.duolingo.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🦉</div>
+                        <div class="link-info"><div class="link-name">多邻国</div><div class="link-url">duolingo.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.zhihuishu.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌱</div>
+                        <div class="link-info"><div class="link-name">智慧树</div><div class="link-url">zhihuishu.com</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 娱乐 -->
+            <div class="category-section" id="entertainment">
+                <div class="category-header">
+                    <div class="cat-icon">🎮</div>
+                    <div>
+                        <h2>娱乐游戏</h2>
+                        <div class="cat-desc">在线小游戏 · 休闲娱乐</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://www.4399.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🕹️</div>
+                        <div class="link-info"><div class="link-name">4399小游戏</div><div class="link-url">4399.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.7k7k.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🎯</div>
+                        <div class="link-info"><div class="link-name">7K7K小游戏</div><div class="link-url">7k7k.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://poki.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌍</div>
+                        <div class="link-info"><div class="link-name">Poki</div><div class="link-url">poki.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.crazygames.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🎲</div>
+                        <div class="link-info"><div class="link-name">CrazyGames</div><div class="link-url">crazygames.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.agar.io" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🔵</div>
+                        <div class="link-info"><div class="link-name">Agar.io</div><div class="link-url">agar.io</div></div>
+                    </a>
+                    <a class="link-card" href="https://slither.io" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🐍</div>
+                        <div class="link-info"><div class="link-name">Slither.io</div><div class="link-url">slither.io</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.yikm.net" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🕹️</div>
+                        <div class="link-info"><div class="link-name">小霸王模拟器</div><div class="link-url">yikm.net</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.17173.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">⚔️</div>
+                        <div class="link-info"><div class="link-name">17173游戏</div><div class="link-url">17173.com</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 购物 -->
+            <div class="category-section" id="shopping">
+                <div class="category-header">
+                    <div class="cat-icon">🛒</div>
+                    <div>
+                        <h2>购物商城</h2>
+                        <div class="cat-desc">综合电商 · 优惠购物</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://www.taobao.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🛍️</div>
+                        <div class="link-info"><div class="link-name">淘宝</div><div class="link-url">taobao.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.jd.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🐶</div>
+                        <div class="link-info"><div class="link-name">京东</div><div class="link-url">jd.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.pinduoduo.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌾</div>
+                        <div class="link-info"><div class="link-name">拼多多</div><div class="link-url">pinduoduo.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.tmall.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🐱</div>
+                        <div class="link-info"><div class="link-name">天猫</div><div class="link-url">tmall.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.suning.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🦁</div>
+                        <div class="link-info"><div class="link-name">苏宁易购</div><div class="link-url">suning.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.vip.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">👑</div>
+                        <div class="link-info"><div class="link-name">唯品会</div><div class="link-url">vip.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.amazon.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📦</div>
+                        <div class="link-info"><div class="link-name">亚马逊</div><div class="link-url">amazon.cn</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.1688.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🏭</div>
+                        <div class="link-info"><div class="link-name">阿里巴巴1688</div><div class="link-url">1688.com</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 影视 -->
+            <div class="category-section" id="movie">
+                <div class="category-header">
+                    <div class="cat-icon">🎬</div>
+                    <div>
+                        <h2>影视动漫</h2>
+                        <div class="cat-desc">在线观影 · 动漫追番</div>
+                    </div>
+                </div>
+                <div class="link-grid">
+                    <a class="link-card" href="https://www.bilibili.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📺</div>
+                        <div class="link-info"><div class="link-name">哔哩哔哩</div><div class="link-url">bilibili.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.iqiyi.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🎥</div>
+                        <div class="link-info"><div class="link-name">爱奇艺</div><div class="link-url">iqiyi.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://v.qq.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🐧</div>
+                        <div class="link-info"><div class="link-name">腾讯视频</div><div class="link-url">v.qq.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.youku.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">▶️</div>
+                        <div class="link-info"><div class="link-name">优酷</div><div class="link-url">youku.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.mgtv.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🥭</div>
+                        <div class="link-info"><div class="link-name">芒果TV</div><div class="link-url">mgtv.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.acfun.cn" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🍌</div>
+                        <div class="link-info"><div class="link-name">AcFun</div><div class="link-url">acfun.cn</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.dmzj.com" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">📖</div>
+                        <div class="link-info"><div class="link-name">动漫之家</div><div class="link-url">dmzj.com</div></div>
+                    </a>
+                    <a class="link-card" href="https://www.agefans.cc" target="_blank" rel="noopener noreferrer">
+                        <div class="favicon-placeholder">🌸</div>
+                        <div class="link-info"><div class="link-name">AGE动漫</div><div class="link-url">agefans.cc</div></div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 推荐网站 -->
+            <div class="featured-section" id="featured">
+                <div class="category-header">
+                    <div class="cat-icon">⭐</div>
+                    <div>
+                        <h2>推荐网站</h2>
+                        <div class="cat-desc">精选优质导航与资源站点</div>
+                    </div>
+                </div>
+                <div class="featured-grid">
+                    <a class="featured-card" href="https://daohang.jsykx.dpdns.org/daohang.html" target="_blank" rel="noopener noreferrer">
+                        <span class="featured-badge">🔥 推荐</span>
+                        <div class="featured-icon">🧭</div>
+                        <div class="featured-name">极速导航</div>
+                        <div class="featured-url">daohang.jsykx.dpdns.org</div>
+                    </a>
+                    <a class="featured-card" href="https://yismayel.github.io/" target="_blank" rel="noopener noreferrer">
+                        <span class="featured-badge">⭐ 精选</span>
+                        <div class="featured-icon">🌐</div>
+                        <div class="featured-name">Yismayel</div>
+                        <div class="featured-url">yismayel.github.io</div>
+                    </a>
+                    <a class="featured-card" href="https://www.wlzy.top/" target="_blank" rel="noopener noreferrer">
+                        <span class="featured-badge">💎 资源</span>
+                        <div class="featured-icon">📦</div>
+                        <div class="featured-name">网络资源</div>
+                        <div class="featured-url">wlzy.top</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 投稿区 -->
+        <div class="submit-section" id="submit">
+            <div class="submit-icon">📮</div>
+            <h3>网站投稿</h3>
+            <p class="submit-desc">如果您有优质的网站资源想要分享，欢迎投稿！<br>我们会审核后收录到导航中。</p>
+            <div class="submit-email">📧 投稿邮箱：<strong>3039196784@qq.com</strong></div>
+            <div class="submit-btns">
+                <button class="submit-btn primary" id="openSubmitModalBtn">✉️ 立即投稿</button>
+                <a class="submit-btn secondary" href="https://mail.qq.com/" target="_blank" rel="noopener noreferrer">📥 下载/打开QQ邮箱</a>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>🌌 星河导航 · 精选优质资源 | 如有问题请通过投稿邮箱联系我们</p>
+            <p style="margin-top:6px;">© 2026 星河导航 | 收录合法网站资源</p>
+        </div>
+    </div>
+
+    <!-- ========== 背景音乐 ========== -->
+    <audio id="bgMusic" loop preload="auto">
+        <!-- 主音乐源：使用免费纯音乐（钢琴曲） -->
+        <source src="https://cdn.jsdelivr.net/gh/nicennnnnnnlee/static-resource@main/music/piano-pure.mp3" type="audio/mpeg">
+        <source src="https://files.freemusicarchive.org/storage-freemusicarchive-org/music/no_curator/Kevin_MacLeod/Calming/Kevin_MacLeod_-_Meditation_Impromptu_01.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        (function() {
+            // ========== 验证码功能 ==========
+            const captchaOverlay = document.getElementById('captchaOverlay');
+            const captchaCanvas = document.getElementById('captchaCanvas');
+            const captchaInput = document.getElementById('captchaInput');
+            const captchaSubmit = document.getElementById('captchaSubmit');
+            const captchaError = document.getElementById('captchaError');
+            const refreshCaptchaBtn = document.getElementById('refreshCaptchaBtn');
+            const musicToggleBtn = document.getElementById('musicToggleBtn');
+            const bgMusic = document.getElementById('bgMusic');
+
+            let currentCaptcha = '';
+            let musicStarted = false;
+
+            // 生成验证码
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+                let captcha = '';
+                for (let i = 0; i < 4; i++) {
+                    captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                currentCaptcha = captcha;
+                drawCaptcha(captcha);
+            }
+
+            // 绘制验证码
+            function drawCaptcha(text) {
+                const ctx = captchaCanvas.getContext('2d');
+                const w = captchaCanvas.width;
+                const h = captchaCanvas.height;
+
+                // 背景
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, w, h);
+
+                // 干扰线
+                for (let i = 0; i < 6; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random() * w, Math.random() * h);
+                    ctx.lineTo(Math.random() * w, Math.random() * h);
+                    ctx.strokeStyle = `rgba(${Math.floor(Math.random()*200)},${Math.floor(Math.random()*200)},${Math.floor(Math.random()*200)},0.5)`;
+                    ctx.lineWidth = 1 + Math.random() * 1.5;
+                    ctx.stroke();
+                }
+
+                // 噪点
+                for (let i = 0; i < 80; i++) {
+                    ctx.fillStyle = `rgba(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},0.3)`;
+                    ctx.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5);
+                }
+
+                // 绘制字符
+                const charWidth = w / (text.length + 1);
+                for (let i = 0; i < text.length; i++) {
+                    const char = text.charAt(i);
+                    const fontSize = 28 + Math.random() * 8;
+                    const x = charWidth * (i + 0.6);
+                    const y = h / 2 + fontSize / 3;
+                    const angle = (Math.random() - 0.5) * 0.5; // -15到15度
+
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+                    ctx.font = `bold ${fontSize}px 'Segoe UI', 'Arial', sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    // 渐变颜色
+                    const gradient = ctx.createLinearGradient(-fontSize / 2, -fontSize / 2, fontSize / 2, fontSize / 2);
+                    gradient.addColorStop(0, `hsl(${Math.floor(Math.random()*360)}, 70%, 45%)`);
+                    gradient.addColorStop(0.5, `hsl(${Math.floor(Math.random()*360)}, 80%, 55%)`);
+                    gradient.addColorStop(1, `hsl(${Math.floor(Math.random()*360)}, 70%, 40%)`);
+                    ctx.fillStyle = gradient;
+                    ctx.fillText(char, 0, 0);
+                    ctx.restore();
+                }
+
+                // 额外干扰线（在字符上层）
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(Math.random() * w, Math.random() * h);
+                    ctx.lineTo(Math.random() * w, Math.random() * h);
+                    ctx.strokeStyle = `rgba(150,150,150,0.3)`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            // 刷新验证码
+            function refreshCaptcha() {
+                generateCaptcha();
+                captchaInput.value = '';
+                captchaInput.focus();
+            }
+
+            // 显示验证码错误
+            function showCaptchaError(msg) {
+                captchaError.textContent = msg || '验证码错误，请重试';
+                captchaError.classList.add('show');
+                setTimeout(() => {
+                    captchaError.classList.remove('show');
+                }, 2000);
+            }
+
+            // 播放背景音乐
+            function playBackgroundMusic() {
+                if (musicStarted) return;
+                musicStarted = true;
+                bgMusic.volume = 0.35;
+                bgMusic.loop = true;
+
+                const playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicToggleBtn.classList.add('playing');
+                        musicToggleBtn.textContent = '🎵';
+                    }).catch(err => {
+                        console.log('自动播放被阻止，等待用户交互...', err);
+                        musicStarted = false;
+                        // 显示音乐按钮提示
+                        musicToggleBtn.classList.remove('playing');
+                        musicToggleBtn.textContent = '🔇';
+                        musicToggleBtn.title = '点击开启音乐';
+                    });
+                }
+            }
+
+            // 验证码验证
+            function verifyCaptcha() {
+                const input = captchaInput.value.trim();
+                if (input === '') {
+                    showCaptchaError('请输入验证码');
+                    return;
+                }
+                if (input.toLowerCase() === currentCaptcha.toLowerCase()) {
+                    // 验证成功
+                    captchaOverlay.classList.add('hidden');
+                    // 播放背景音乐
+                    setTimeout(() => {
+                        playBackgroundMusic();
+                    }, 300);
+                } else {
+                    showCaptchaError('验证码错误，请重试');
+                    refreshCaptcha();
+                }
+            }
+
+            // 事件绑定
+            captchaSubmit.addEventListener('click', verifyCaptcha);
+            captchaInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    verifyCaptcha();
+                }
+            });
+            refreshCaptchaBtn.addEventListener('click', refreshCaptcha);
+            captchaCanvas.addEventListener('click', refreshCaptcha);
+
+            // 音乐按钮切换
+            musicToggleBtn.addEventListener('click', function() {
+                if (bgMusic.paused) {
+                    bgMusic.volume = 0.35;
+                    bgMusic.loop = true;
+                    bgMusic.play().then(() => {
+                        musicToggleBtn.classList.add('playing');
+                        musicToggleBtn.textContent = '🎵';
+                        musicStarted = true;
+                    }).catch(err => {
+                        console.log('音乐播放失败', err);
+                    });
+                } else {
+                    bgMusic.pause();
+                    musicToggleBtn.classList.remove('playing');
+                    musicToggleBtn.textContent = '🔇';
+                }
+            });
+
+            // 音乐加载错误处理
+            bgMusic.addEventListener('error', function(e) {
+                console.log('音频加载出错，尝试下一个源...', e);
+                // 尝试下一个source
+                const sources = bgMusic.querySelectorAll('source');
+                for (let i = 0; i < sources.length; i++) {
+                    if (sources[i].src === bgMusic.currentSrc || !bgMusic.currentSrc) {
+                        continue;
+                    }
+                }
+                // 如果所有源都失败，静默处理
+            });
+
+            // 初始化验证码
+            generateCaptcha();
+
+            // ========== 壁纸轮播 ==========
+            const slides = document.querySelectorAll('.wallpaper-slider .slide');
+            let currentSlide = 0;
+            const slideInterval = 5000; // 5秒切换
+
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+
+            // 预加载壁纸图片
+            slides.forEach(slide => {
+                const bgImage = slide.style.backgroundImage;
+                if (bgImage) {
+                    const url = bgImage.replace(/url\(['"]?(.*?)['"]?\)/i, '$1');
+                    const img = new Image();
+                    img.src = url;
+                }
+            });
+
+            // 启动壁纸轮播
+            setInterval(nextSlide, slideInterval);
+
+            // ========== 投稿模态框 ==========
+            const submitModal = document.getElementById('submitModal');
+            const openSubmitModalBtn = document.getElementById('openSubmitModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            openSubmitModalBtn.addEventListener('click', function() {
+                submitModal.classList.add('show');
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                submitModal.classList.remove('show');
+            });
+
+            submitModal.addEventListener('click', function(e) {
+                if (e.target === submitModal) {
+                    submitModal.classList.remove('show');
+                }
+            });
+
+            // 检测mailto是否可用
+            const mailtoBtn = document.getElementById('mailtoBtn');
+            mailtoBtn.addEventListener('click', function(e) {
+                // 允许默认mailto行为
+                // 如果用户没有邮箱客户端，浏览器会尝试打开默认邮件应用
+                // 如果失败，用户仍然可以通过模态框中的QQ邮箱链接访问
+                setTimeout(() => {
+                    // 不关闭模态框，让用户可以看到备用选项
+                }, 500);
+            });
+
+            // ========== 键盘快捷键 ==========
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    submitModal.classList.remove('show');
+                }
+                // Ctrl+Enter 快速验证
+                if (e.ctrlKey && e.key === 'Enter' && !captchaOverlay.classList.contains('hidden')) {
+                    verifyCaptcha();
+                }
+            });
+
+            // ========== 平滑滚动 ==========
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+
+            // ========== 页面加载完成后的初始化 ==========
+            console.log('🌌 星河导航已加载完成');
+            console.log('📧 投稿邮箱: 3039196784@qq.com');
+            console.log('💡 提示: 点击验证码图片可刷新');
+            console.log('🎵 提示: 验证通过后自动播放背景音乐');
+        })();
+    </script>
+</body>
+</html>
