@@ -1,0 +1,30 @@
+{
+  "name": "xinghe-navigation",
+  "version": "1.0.0",
+  "description": "星河导航 - 精选资源收录导航应用",
+  "main": "index.js",
+  "scripts": {
+    "dev": "http-server www -p 8000 -c-1",
+    "build": "echo 'Build complete'",
+    "cap:add:android": "npx cap add android",
+    "cap:open:android": "npx cap open android",
+    "cap:sync": "npx cap sync",
+    "cap:build:android": "npx cap build android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^5.0.0",
+    "@capacitor/cli": "^5.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^5.0.0",
+    "http-server": "^14.1.1"
+  },
+  "keywords": [
+    "navigation",
+    "website",
+    "directory",
+    "资源导航"
+  ],
+  "author": "yismayel",
+  "license": "MIT"
+}
